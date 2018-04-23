@@ -11,10 +11,6 @@ import mutagen
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 import sqlite3
-#from hachoir.parser import createParser
-#from hachoir.metadata import extractMetadata
-#from ID3 import *
-#from mutagen.mp3 import MP3
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or('!', '!music '), descripton='Shiny School Idol Bot!!')
 songList=os.listdir("../Mari/music/")
@@ -53,7 +49,7 @@ conn.close()
 @asyncio.coroutine
 def on_ready():
 	print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
-	yield from bot.change_presence(activity=discord.Game(type=1,name='Type \"!help\"'))
+	await bot.change_presence(activity=discord.Game(type=1,name='Type \"!help\"'))
 	global requests
 	requests=[]
 	#all=bot.get_all_emojis()
@@ -68,19 +64,19 @@ def on_ready():
 @bot.event
 async def on_message(message):
 	if "its joke" in message.content.lower() or "it\'s joke" in message.content.lower():
-		await bot.add_reaction(message,discord.utils.get(message.server.emojis, name="mariJoke"))
+		await message.add_reaction(discord.utils.get(message.server.emojis, name="mariJoke"))
 	if "thanks maribot" in message.content.lower():
-		await bot.send_message(message.channel,"no problem {}".format(message.author.mention))
+		await message.channel.send("no problem {}".format(message.author.mention))
 	if "maribot" in message.content.lower() and ("ily" in message.content.lower() or "i love you" in message.content.lower()):
 		if "dimi" in message.author.display_name.lower():
-			await bot.add_reaction(message,discord.utils.get(message.server.emojis, name="mariSuteki"))
-			await bot.send_message(message.channel, "ily too dimi")
+			await message.add_reaction(discord.utils.get(message.server.emojis, name="mariSuteki"))
+			await message.channel.send( "ily too dimi")
 		else:
-			await bot.send_message(message.channel, "Sorry, I only loves dimi")
+			await message.channel.send("Sorry, I only loves dimi")
 	if message.channel.id=="396077247481643028":
 		if len(message.attachments)>0 or ".png" in message.content or ".jpg" in message.content or "twitter.com/" in message.content.lower():
 			Role=discord.utils.get(message.server.roles,name="Meme Queen")
-			await bot.add_roles(message.author,Role)
+			await message.author.add_roles(Role)
 	if "<:" in message.content and message.author.bot is not True:
 		await process(message.content)
 
@@ -127,7 +123,7 @@ async def delayMessage(defch,welcomeMessage):
 	global resetSafe
 	resetSafe+=1
 	await asyncio.sleep(600)
-	await bot.send_message(defch,welcomeMessage)
+	await defch.send(welcomeMessage)
 	resetSafe-=1
 
 @asyncio.coroutine
@@ -143,7 +139,7 @@ def reset(ctx):
 	while i<60:
 		if resetSafe==0 and len(ch.voice_members)<2:
 			try:
-				await bot.send_message(ctx.message.server.get_member("136624816613621761"),"resetting")
+				await ctx.message.server.get_member("136624816613621761").send("resetting")
 			except:
 				print("")
 			sys.exit(0)
@@ -158,8 +154,8 @@ def reset(ctx):
 			print(str(resetSafe)+" welcomes left")
 		if resetSafe==0:
 			try:
-				await bot.send+message(ctx.message.channel,"Mari will be right back")
-				await bot.send_message(ctx.message.server.get_member("136624816613621761"),"resetting")
+				await ctx.message.channel.send("Mari will be right back")
+				await ctx.message.server.get_member("136624816613621761").send("resetting")
 			except:
 				print("")
 			sys.exit(0)
@@ -183,7 +179,7 @@ async def smug(ctx):
 	await ctx.send("<:mariJoke:395760980577091585>")
 
 @bot.command()
-async def queue():
+async def queue(ctx):
 	"""see what SHINY songs Mari has in store for you"""
 	global requests
 	requestList="```"
@@ -194,38 +190,42 @@ async def queue():
 			requestList=requestList+request
 			requestList=requestList+"\n"
 	requestList=requestList+"```"
-	await bot.say(requestList)
+	await ctx.send(requestList)
 
 @bot.command(no_pm=True,pass_context=True)
 async def request(ctx,*,message):
 	"""Request Mari-San to play a song! If you only know some of the name that's fine, Mari-Nee-san will help"""
 	global requests
 	potential=[]
-	bot.send_typing(ctx.message.channel)
+	#bot.send_typing(ctx.message.channel)
 	if message.lower=="gay":
 		ctx.send('adding every love live song ever')
-	for song in songList:
-		if fuzz.ratio(message.lower()+'.mp3',song.lower())>95:
-			requests.append(song)
-			#yield from bot.say("added")
-			await bot.add_reaction(ctx.message,discord.utils.get(ctx.message.server.emojis, name="mariYay"))
-			return 0
-		elif fuzz.partial_ratio(message.lower(),song.lower())>85:
-			potential.append(song)
-	if len(potential)==0:
-		await bot.say("Song not found, check your spelling or pm junior mints to add the song.")
-	elif len(potential)==1:
-		#yield from bot.say("added")
-		await bot.add_reaction(ctx.message,discord.utils.get(ctx.message.server.emojis, name="mariYay"))
-		requests.append(potential[0])
+		await ctx.message.add_reaction(discord.utils.get(ctx.message.server.emojis, name="mariYay"))
+		await ctx.message.add_reaction(discord.utils.get(ctx.message.server.emojis, name="mariSuperSmug"))
+		requests.append("Garasu no Hanazono.mp3")
 	else:
-		response="```These are potential matches, try being more specific version"
-		x=0
-		for song in potential:
-			response+='\n'
-			response+=song
-		response+='```'
-		await bot.say(response)
+		for song in songList:
+			if fuzz.ratio(message.lower()+'.mp3',song.lower())>95:
+				requests.append(song)
+				#yield from bot.say("added")
+				await ctx.message.add_reaction(discord.utils.get(ctx.message.server.emojis, name="mariYay"))
+				return 0
+			elif fuzz.partial_ratio(message.lower(),song.lower())>85:
+			potential.append(song)
+		if len(potential)==0:
+			await ctx.send("Song not found, check your spelling or pm junior mints to add the song.")
+		elif len(potential)==1:
+			#yield from bot.say("added")
+			await ctx.message.add_reaction(discord.utils.get(ctx.message.server.emojis, name="mariYay"))
+			requests.append(potential[0])
+		else:
+			response="```These are potential matches, try being more specific version"
+			x=0
+			for song in potential:
+				response+='\n'
+				response+=song
+			response+='```'
+			await ctx.send(response)
 
 @bot.command(no_pm=True,pass_context=True)
 async def playlist(ctx,*,message):
@@ -235,24 +235,16 @@ async def playlist(ctx,*,message):
 		with open("../Mari/playlists/"+message+".txt") as f:
 			songs=f.readlines()
 		addedSong=random.choice(songs)
-		await bot.say("added "+addedSong.strip()+" to the queue")
+		await ctx.send("added "+addedSong.strip()+" to the queue")
 		requests.append(addedSong.strip())
 
 
-#@bot.command()
-#@asyncio.coroutine
-#def sleep(*,sleepytime):
-#	"""currently disabled"""
-#	global voice
-#	global sleep
-	#sleep=int(sleepytime)
-	#yield from bot.say("Rin is going to take a quick {} second catNyap!".format(sleep))
 
 @bot.command(pass_context=True)
 async def list(ctx):
 	"""I can message you all the songs I know!"""
 	for songName in songs:
-		await bot.send_message(ctx.message.author,songName)
+		await ctx.message.author.send(songName)
 
 @bot.command(pass_context=True)
 async def listPL(ctx):
@@ -269,7 +261,7 @@ async def listPL(ctx):
 	PLs[-1]+='```'
 
 	for PL in PLs:
-		async bot.send_message(ctx.message.author,PL)
+		async ctx.message.author.send(PL)
 
 @bot.command(pass_context=True)
 async def PLContent(ctx,*,message):
@@ -280,20 +272,13 @@ async def PLContent(ctx,*,message):
 	for song in songnames:
 		plcontent+=song
 	plcontent+="```"
-	await bot.send_message(ctx.message.author,plcontent)
+	await ctx.message.author.send(plcontent)
 
 @bot.command(hidden=True)
-async def ban(member : discord.User = bot.user):
+async def ban(ctx,member : discord.User = bot.user):
 	global banCoolDown
 	if banCoolDown ==0:
-		await bot.say("{0} is now BANNED".format(member.mention))
-		bot.loop.create_task(banCool())
-
-async def banCool():
-	global banCoolDown
-	banCoolDown=1
-	asyncio.sleep(1800)
-	banCoolDown=0
+		await ctx.send("{0} is now BANNED".format(member.mention))
 
 @bot.command(hidden=True)
 async def update():
@@ -421,7 +406,7 @@ async def stop(self):
 	"""stops music (for now)"""
 	global message
 	message=-1
-	await bot.change_presence(game=discord.Game(type=1,name='Type \"!music\" to start music'))
+	await bot.change_presence(activity=discord.Game('Type \"!music\" to start music'))
 
 @bot.command(pass_context=True, no_pm=True)
 async def music(ctx):
@@ -448,7 +433,7 @@ async def music(ctx):
 #	mode="./music/"
 
 @bot.command()
-async def playing():
+async def playing(ctx):
 	"""I tell you the song I am singing"""
 	global current
 	global mode
@@ -483,7 +468,7 @@ async def playing():
 		artist+="\n"
 	if not("TPE1" in data.keys() or "TXXX:artist_en" in data.keys() or "TXXX:artist_jp" in data.keys()):
 		artist="\nArtist unknown, pm junior mints to add one"
-	await bot.say("```css\n[File]: "+current+title+artist+"```")
+	await ctx.send("```css\n[File]: "+current+title+artist+"```")
 
 global message
 global resetSafe
