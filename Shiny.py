@@ -140,12 +140,15 @@ async def Mute(spammer,guild):
 
 @bot.event
 async def on_message(message):
-	if "Joke" in message.guild.name:
-		return (1)
+	try:
+		if "Joke" in message.guild.name:
+			return (1)
+	except:
+		print ("")
 	#print (message.content)
 	global G_orig,G_repeat,G_max,G_time,antiSpamCount,antiSpam,enable
 	if message.author.id in antiSpam.keys() and message.channel.id!=410486994699812864:
-		if message.author.id==270266799885516801 and channel.id==175176485022334976:
+		if message.author.id==270266799885516801 and message.channel.id==175176485022334976:
 			antiSpamCount[message.author.id]+=0
 		if message.content in antiSpam[message.author.id]:
 			antiSpamCount[message.author.id]+=G_repeat
@@ -217,14 +220,14 @@ async def handleDimi(message):
 			await asyncio.sleep(random.randint(3,7))
 			await message.channel.send("I didn't know pets could talk <:mariSuteki:395764874283581442>")
 	elif "execute order 66" in message.content.lower():
-		async with message.author.typing():
+		async with message.channel.typing():
 			await asyncio.sleep(random.randint(2,4))
 			await message.channel.send("working on it")
 			await asyncio.sleep(random.randint(60*3,60*5))
 			await message.channel.send("preparations complete")
 			await asnycio.sleep(random.randint(5,7))
 			await message.channel.send("<:mariSuperSmug:411516943099494400")
-			spamch=discord.utils.get(message.guild,name="lets-emoji-spam")
+			spamch=discord.utils.get(message.guild.text_channels,name="lets-emoji-spam")
 			await message.channel.send("{0}".format(spamch.mention))
 			await asnycio.sleep(2)
 			await spamch.send("<:McMari:398559387377205248> {0}".format(message.author.mention))
@@ -240,6 +243,10 @@ async def handleDimi(message):
 			await spamch.send("<:McMari:398559387377205248> <a:rikodance:440537108159922186>")
 			await asnycio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:kanandance:439925504137494539>")
+	elif "night marib" in message.content.lower():
+		async with message.channel.typing():
+			await asyncio.sleep(5)
+			await message.channel.send("sleep tite dimi")
 
 
 
@@ -335,16 +342,16 @@ async def reset(ctx):
 	try:
 		global resetSafe
 		channel=open("channel.txt","r")
-		ch=discord.utils.find(lambda m:m.id==int(channel.read().strip()),ctx.guild.voice_channels)
+		ch=discord.utils.find(lambda m:m.id==402987335391772676,ctx.guild.voice_channels)
 		i=0
 		while i<60:
 			if resetSafe==0 and len(ch.members)<2:
 				try:
 					owner=bot.get_user(136624816613621761)
 					await owner.send('resetting')
-				except:
-					print("")
-				sys.exit(0)
+				except Exception as e:
+					print("tried to send message to you, failed with: "+e)
+				sys.exit()
 			else:
 				print (str(len(ch.voice_members))+" left in vc and "+str(resetSafe)+" welcome messages atm")
 				await asyncio.sleep(60)
@@ -360,7 +367,7 @@ async def reset(ctx):
 					await ctx.message.guild.get_member("136624816613621761").send("resetting")
 				except:
 					print("")
-				sys.exit(0)
+				sys.exit()
 			else:
 				await asyncio.sleep(20)
 	except:
@@ -416,52 +423,40 @@ async def enableSpam(ctx):
 	global enable
 	enable=True
 
-@bot.command(hidden=True)
+@bot.command()
 async def love(ctx,*,msg):
 	MSG=msg.strip().lower()
-	if msg.strip().lower()=="holo":
-		await ctx.send("https://i.redd.it/cyvubbhqmed01.gif")
-	elif msg.strip().lower()=="riko":
-		await ctx.send("https://i.imgur.com/DUoQ3Gl.jpg")
-	elif msg.strip().lower()=="maki":
-		await ctx.send("https://vignette.wikia.nocookie.net/lovelive-school-idol-project/images/7/7c/Tumblr_n8xvt6BARn1r5o4ldo1_500.gif")
-	elif msg.strip().lower()=="nico":
-		await ctx.send("https://pa1.narvii.com/5891/9a988cdec2315884236d84e5b58f2502993fbd75_hq.gif")
-	elif msg.strip().lower()=="nozomi":
-		await ctx.send("http://33.media.tumblr.com/6f21d355ddb387c0fd2fc7ea4ffe2d05/tumblr_mjntksDQ9s1s74h99o1_500.gif")
-	elif msg.strip().lower()=="honoka":
-		await ctx.send("https://cdn.discordapp.com/attachments/175176337185701888/452915045744115712/ZP6Rccq.gif")
-	elif msg.strip().lower()=="rin":
-		await ctx.send("https://cdn.discordapp.com/attachments/175176337185701888/452915322480099370/tumblr_nywwhyWL9l1sd4myto1_1280.gif")
-	elif msg.strip().lower()=="hanayo":
-		await ctx.send("https://cdn.discordapp.com/attachments/175176337185701888/452915561798565888/U7qWmxa_-_Imgur.gif")
-	elif msg.strip().lower()=="wing":
-		await ctx.send("https://pa1.narvii.com/6578/108aba435cea83ca1b2a711382e8ab7d270a1f0b_hq.gif")
-	elif msg.strip().lower()=="alice":
-		await ctx.send("http://i.imgur.com/cup91Er.jpg")
-	elif msg.strip().lower()=="addy":
-		await ctx.send("https://pbs.twimg.com/profile_images/642221136000847872/CrOuzWKy_400x400.jpg")
-	elif msg.strip().lower()=="anchan":
-		await ctx.send("https://cdn.discordapp.com/attachments/175176337185701888/461540404416741377/kunikida_hanamaru_and_ohara_mari_love_live_and_love_live_sunshine_drawn_by_pipette1223__ac69281985ed.png")
-	elif msg.strip().lower()=="dimi":
-		await ctx.send("https://i.schoolido.lu/web/static/cards/ur_pairs/1208MariCleanURIdolized.png")
-	elif msg.strip().lower()=="maribot":
+	f=open("love.json","r")
+	loveNovel=json.loads(f.read())
+	f.close()
+	if MSG=="maribot":
 		await ctx.send(ctx.message.guild.get_member(111459540679024640).avatar_url_as(format=None, static_format="png"))
-	elif msg.strip().lower()=="taku":
-		await ctx.send("http://pa1.narvii.com/6533/275b79068321b061f2d37f21dec950bd7b353e18_hq.gif")
-	elif msg.strip().lower()=="dig" or msg.strip().lower()=="dig785":
-		await ctx.send("https://78.media.tumblr.com/e904994ce583f8f121c15fbb2f35d868/tumblr_ol6s1yrcKL1t51dpro1_640.gif")
-	elif msg.strip().lower()=="junior" or msg.strip().lower()=="junior mints":
-		await ctx.send("https://pbs.twimg.com/media/DgtiLhOVAAIeyR8.jpg")
-	elif msg.strip().lower()=="wolf":
-		await ctx.send("https://pa1.narvii.com/6195/00a7ae45d5a2b56d32bf842c27dbfe05e420d63a_hq.gif")
-	elif msg.strip().lower()=="daten":
-		await ctx.send("https://cdn.discordapp.com/attachments/441031266574532609/467793713368924161/DescriptiveUglyDromedary-max-1mb.gif")
-	elif MSG=="vivi":
-		await ctx.send("but vivi doesn't even love me enough to read my messages")
-	elif MSG=="azaius":
-		await ctx.send("https://cdn.discordapp.com/attachments/175176337185701888/473663676671459328/67317167_p0.jpg")
+	elif MSG in loveNovel.keys():
+		await ctx.send(loveNovel[MSG])
 
+@bot.command()
+async def loveadd(ctx,person,content):
+	f=open("love.json","r")
+	loveNovel=json.loads(f.read())
+	f.close()
+	if person.lower() in loveNovel.keys():
+		await ctx.send("I already know how {0} is loved".format(person))
+	else:
+		loveNovel[person.lower()]=content
+		f=open("love.json","w")
+		f.write(json.dumps(loveNovel))
+		f.close()
+
+@bot.command()
+@commands.check(isMod)
+async def loveremove(ctx,person,content):
+	f=open("love.json","r")
+	loveNovel=json.loads(f.read())
+	f.close()
+	f=open("love.json","w")
+	del loveNovel[person]
+	f.write(json.dumps(loveNovel))
+	f.close()
 
 @bot.command(hidden=True)
 @commands.check(botOwner)
@@ -473,7 +468,7 @@ async def restart(ctx):
 
 @bot.command(no_pm=True)
 async def restartNow(ctx):
-	"""Say this if Mari-chan is being naughty and it can't wait"""
+	"""Restarts Mari, only use this if she isn't working right"""
 	sys.exit(0)
 
 @bot.command(no_pm=True)
