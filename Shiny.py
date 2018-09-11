@@ -45,6 +45,9 @@ data=json.load(open('pastebin.json'))
 api=PasteBinApi(dev_key=data['key'])
 user_key=api.user_key(username=data['username'],password=data['password'])
 #my_key = PastebinAPI.generate_user_key(self,data['key'], data['username'], data['password'])
+G_suteki="<:mariSuteki:395764874283581442>"
+G_smug="<:mariSuperSmug:411516943099494400>"
+G_gasm="<:mariGasm:396648817988075521>"
 
 for song in songList:
 	if len(songs[-1])>1800:
@@ -197,14 +200,14 @@ async def handleDimi(message):
 			await asyncio.sleep(random.randint(2,3))
 			await message.add_reaction(discord.utils.get(message.guild.emojis, name="mariSuteki"))
 			await asyncio.sleep(random.randint(3,5))
-			await message.channel.send("I can't wait to get married <:mariSuteki:395764874283581442>")
+			await message.channel.send("I don't blame you "+G_smug)
 	elif "let me " in message.content.lower() or "can i " in message.content.lower():
 		async with message.channel.typing():
 			await asyncio.sleep(random.randint(5,8))
-			await message.channel.send("Shouldn't this be in DMs Dimi? <:mariSuteki:395764874283581442>")
+			await message.channel.send("Shouldn't this be in DMs Dimi? "+G_suteki)
 	elif "send " in message.content.lower():
 		if "thigh" in message.content.lower():
-			await message.channel.send("i'll send them in DMs <:mariSuteki:395764874283581442>")
+			await message.channel.send("i'll send them in DMs "+G_suteki)
 			async with message.author.typing():
 				await message.author.send("one seccond")
 				await asyncio.sleep(random.randint(6,15))
@@ -214,34 +217,35 @@ async def handleDimi(message):
 		if "nudes" in message.content.lower() or "noods" in message.content.lower():
 			async with message.channel.typing():
 				await asyncio.sleep(random.randint(4,6))
-				await message.channel.send("you first <:mariGasm:396648817988075521>")
+				await message.channel.send("you first "+G_gasm)
 	elif "step on" in message.content.lower():
 		async with message.channel.typing():
 			await asyncio.sleep(random.randint(3,7))
-			await message.channel.send("I didn't know pets could talk <:mariSuteki:395764874283581442>")
+			await message.channel.send("I didn't know pets could talk "+G_suteki)
 	elif "execute order 66" in message.content.lower():
 		async with message.channel.typing():
 			await asyncio.sleep(random.randint(2,4))
 			await message.channel.send("working on it")
 			await asyncio.sleep(random.randint(60*3,60*5))
 			await message.channel.send("preparations complete")
-			await asnycio.sleep(random.randint(5,7))
-			await message.channel.send("<:mariSuperSmug:411516943099494400")
+			await asyncio.sleep(random.randint(5,7))
+			await message.channel.send(G_smug)
 			spamch=discord.utils.get(message.guild.text_channels,name="lets-emoji-spam")
+		async with spamch.typing():
 			await message.channel.send("{0}".format(spamch.mention))
-			await asnycio.sleep(2)
+			await asyncio.sleep(2)
 			await spamch.send("<:McMari:398559387377205248> {0}".format(message.author.mention))
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:zuradance:440368129105985547>")
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:youdance:440537076317028352>")
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:mariDance:397596749101006868>")
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:yohadance:439193900461326347>")
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:rikodance:440537108159922186>")
-			await asnycio.sleep(4)
+			await asyncio.sleep(4)
 			await spamch.send("<:McMari:398559387377205248> <a:kanandance:439925504137494539>")
 	elif "night marib" in message.content.lower():
 		async with message.channel.typing():
@@ -435,6 +439,7 @@ async def love(ctx,*,msg):
 		await ctx.send(loveNovel[MSG])
 
 @bot.command()
+@commands.check(isMod)
 async def loveadd(ctx,person,content):
 	f=open("love.json","r")
 	loveNovel=json.loads(f.read())
@@ -449,7 +454,7 @@ async def loveadd(ctx,person,content):
 
 @bot.command()
 @commands.check(isMod)
-async def loveremove(ctx,person,content):
+async def loveremove(ctx,person):
 	f=open("love.json","r")
 	loveNovel=json.loads(f.read())
 	f.close()
@@ -533,9 +538,9 @@ async def request(ctx,*,message):
 				return 0
 	elif "thighs" in message.lower():
 		if isDimi(ctx):
-			await ctx.send("i'll send them in DMs <:mariSuteki:395764874283581442>")
+			await ctx.send("i'll send them in DMs "+G_suteki)
 			async with ctx.author.typing():
-				await ctx.author.send("one seccond")
+				await ctx.author.send("smh, don't you have them saved?")
 				await asyncio.sleep(random.randint(3,15))
 				await ctx.author.send("ok, here they are! https://imgur.com/a/5hk7tOU")
 				await asyncio.sleep(random.randint(3,15))
@@ -681,7 +686,7 @@ async def status():
 		artist=str(data["TXXX:artist_jp"])
 	else:
 		artist="artist unknown, pm junior mints to add one"
-	await bot.change_presence(activity=discord.Streaming(name=title+" by "+artist,url="https://www.twitch.tv/anthem_zura"))
+	await bot.change_presence(activity=discord.Streaming(name=title+" by "+artist,url="https://www.twitch.tv/anthemOSU"))
 
 def get_vc(ctx,channel):
 	for ch in ctx.guild.voice_channels:
@@ -707,7 +712,7 @@ async def play(ctx):
 		current=requests.pop(0)
 	else:
 		current=songs.pop(0)
-	player=voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 9"))
+	player=voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 8"))
 	#yield from bot.change_presence(game=discord.Game(type=2,name=current))
 	await status()
 	#player.start()
@@ -731,7 +736,7 @@ async def play(ctx):
 					current=songs.pop(0)
 			#yield from bot.change_presence(game=discord.Game(type=2,name=current.replace('.mp3','')))
 			await status()
-			voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 9"))
+			voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 8"))
 			#voice.start()
 		elif voice.is_playing():
 			#print("is playing")
@@ -747,7 +752,7 @@ async def play(ctx):
 					current=songs.pop(0)
 			#yield from bot.change_presence(game=discord.Game(type=2,name=current))
 			await status()
-			voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 9"))
+			voice.play(discord.FFmpegPCMAudio(mode+current,options="-q:a 8"))
 			#player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			#player.start()
 
