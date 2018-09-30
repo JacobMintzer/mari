@@ -170,6 +170,10 @@ async def on_message(message):
 		await message.add_reaction(discord.utils.get(message.guild.emojis, name="mariJoke"))
 	if "thanks maribot" in message.content.lower():
 		await message.channel.send("no problem {}".format(message.author.mention))
+	if "nep" == message.content.lower():
+		await message.channel.send("nep nep")
+	if "nep nep nep" == message.content.lower():
+		await message.channel.send("https://www.youtube.com/watch?v=EKxio8HZiNA")
 	if message.author.id==111459540679024640 and ("maribot" in message.content.lower() or message.content.startswith("!")):
 		await handleDimi(message)
 	elif "maribot" in message.content.lower() and ("ily" in message.content.lower() or "i love you" in message.content.lower()):
