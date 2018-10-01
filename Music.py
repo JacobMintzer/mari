@@ -38,7 +38,7 @@ class Music:
 		self.message=0
 		self.requests=[]
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	async def update(ctx):
 		"""Sometimes I forget when I learn new songs~"""
 		self.songList=os.listdir(self.mode)
@@ -131,19 +131,19 @@ class Music:
 		shuffle(songList)
 		return songList
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def skip(ctx):
 		"""If you want me to play another song"""
 		self.message=5
 
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def stop(ctx):
 		"""stops music (for now)"""
 		self.message=-1
 		await ctx.bot.change_presence(activity=discord.Game('Type \"!music\" to start music'))
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def music(ctx):
 		"""Let's start the music!"""
 		msg=ctx.message.content.replace("!music ","")
@@ -160,7 +160,7 @@ class Music:
 			bot.loop.create_task(play(ctx))
 
 
-	@bot.command()
+	@commands.command()
 	async def playing(ctx):
 		"""I tell you the song I am singing"""
 		data=mutagen.File(self.mode+self.current)
@@ -193,7 +193,7 @@ class Music:
 		await ctx.send("```css\n[File]: "+self.current+title+artist+"```")
 
 
-	@bot.command()
+	@commands.command()
 	async def queue(ctx):
 		"""see what SHINY songs Mari has in store for you"""
 		requestList="```"
@@ -206,7 +206,7 @@ class Music:
 		requestList=requestList+"```"
 		await ctx.send(requestList)
 
-	@bot.command(no_pm=True,pass_context=True)
+	@commands.command(no_pm=True,pass_context=True)
 	async def request(ctx,*,msg):
 		"""Request Mari-San to play a song! If you only know some of the name that's fine, Mari-Nee-san will help"""
 		potential=[]
@@ -260,8 +260,10 @@ class Music:
 				response+='```'
 				await ctx.send(response)
 
-	@bot.command(pass_context=True)
+	@commands.command(pass_context=True)
 	async def list(ctx):
 		"""I can message you all the songs I know!"""
 		for songName in songs:
 			await ctx.message.author.send(songName)
+def setup (bot):
+	bot.add_cog(Music(bot))

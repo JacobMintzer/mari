@@ -21,7 +21,7 @@ class Events:
 		self.maricord=self.bot.get_guild(175176337185701888)
 		self.emoteList=self.maricord.emojis
 
-	@bot.event
+	@commands.event
 	async def on_guild_emojis_update(guild,before,after):
 		if "Shiny" in guild.name:
 			for emote in after:
@@ -32,7 +32,7 @@ class Events:
 					conn.commit()
 					conn.close()
 
-	@bot.event
+	@commands.event
 	async def on_reaction_add(reaction, user):
 		if "Shiny" in reaction.message.guild.name:
 			try:
@@ -47,7 +47,7 @@ class Events:
 			except Exception as e:
 				print("error on checking reaction "+str(e))
 
-	@bot.event
+	@commands.event
 	async def on_member_join(member):
 		if "Shiny" in member.guild.name:
 			for channel in member.guild.channels:

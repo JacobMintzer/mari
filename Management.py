@@ -28,7 +28,7 @@ class Management:
 				self.filingCH=channel
 
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(isMod)
 	async def exportEmotes(ctx):
 		conn=sqlite3.connect('emotes.db')
@@ -39,17 +39,17 @@ class Management:
 		link=api.paste(user_key,title='emote usage',raw_code=result,private=None,expire_date=None)
 		await ctx.send(link)
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(isMod)
 	async def disableSpam(ctx):
 		self.enableFilter=False
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(isMod)
 	async def enableSpam(ctx):
 		self.enableFilter=True
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(botOwner)
 	async def restart(ctx):
 		"""I will restart once I'm done with my work"""
@@ -57,12 +57,12 @@ class Management:
 		self.bot.loop.create_task(reset(ctx))
 
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def restartNow(ctx):
 		"""Restarts Mari, only use this if she isn't working right"""
 		sys.exit(0)
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def iam(ctx,*,role):
 		"""Self assign roles (eg. !iam pure, !iam squad)"""
 		if "pure" in role.lower():
@@ -74,7 +74,7 @@ class Management:
 		elif "mod" in role.lower():
 			await ctx.send("<:mariJoke:395760980577091585>")
 
-	@bot.command(no_pm=True)
+	@commands.command(no_pm=True)
 	async def iamn(ctx,*,role):
 		"""Remove self assign roles (eg. !iamn pure, !iamn squad)"""
 		if "pure" in role.lower():
@@ -85,7 +85,7 @@ class Management:
 			await ctx.message.author.remove_roles(Role)
 
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(botOwner)
 	async def updateEmojis(ctx):
 		conn=sqlite3.connect('emotes.db')
@@ -108,7 +108,7 @@ class Management:
 			if ch.id==channel:
 				return ch
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(isMod)
 	async def mute(ctx,member : discord.User = self.bot.user, minutes):
 	"""format is !mute @user minutes to mute"""

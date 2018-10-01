@@ -28,6 +28,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or('!', 'hey nep ', 'H
 bot.add_cog(Music(bot))
 bot.add_cog(Management(bot,config))
 bot.add_cog(FunPosting(bot,config))
+bot.add_cog(Events(bot,config))
 songList=os.listdir("../Mari/music/")
 songList.sort()
 if not discord.opus.is_loaded():

@@ -19,7 +19,7 @@ class FunPosting:
 		self.config=config
 		self.bot=bot
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	@commands.check(isMod)
 	async def say(ctx,*,msg):
 		if ctx.author.id==config["dimiId"]:
@@ -29,7 +29,7 @@ class FunPosting:
 		await ctx.message.delete()
 		await ctx.send(content)
 
-	@bot.command()
+	@commands.command()
 	async def love(ctx,*,msg):
 		MSG=msg.strip().lower()
 		f=open("love.json","r")
@@ -40,7 +40,7 @@ class FunPosting:
 		elif MSG in loveNovel.keys():
 			await ctx.send(loveNovel[MSG])
 
-	@bot.command()
+	@commands.command()
 	@commands.check(isMod)
 	async def loveadd(ctx,person,content):
 		f=open("love.json","r")
@@ -54,7 +54,7 @@ class FunPosting:
 			f.write(json.dumps(loveNovel))
 			f.close()
 
-	@bot.command()
+	@commands.command()
 	@commands.check(isMod)
 	async def loveremove(ctx,person):
 		f=open("love.json","r")
@@ -66,11 +66,11 @@ class FunPosting:
 		f.close()
 
 
-	@bot.command()
+	@commands.command()
 	async def smug(ctx):
 		await ctx.send("<:mariJoke:395760980577091585>")
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	async def ban(ctx,member : discord.User = self.bot.user):
 		global banCoolDown
 		if member.id==config["dimiId"]:
