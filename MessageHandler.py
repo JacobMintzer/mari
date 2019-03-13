@@ -12,7 +12,24 @@ from paste_bin import PasteBinApi
 import sqlite3
 import json
 import pandas as pd
+girls=["You","Kanan","Riko","Chika","Dia","Ruby","Hanamaru","Yoshiko","Harem"]
 
+
+event=1
+
+def getRoles(message):
+	gRoles=[]
+	for g in girls:
+		Role=discord.utils.get(message.guild.roles,name="Mari"+g)
+		if Role==None:
+			Role=discord.utils.get(message.guild.roles,name=g+"Mari")
+		gRoles.append(Role)
+	return gRoles
+
+async def removeRoles(gRoles,author):
+	for rol in gRoles:
+		if rol!=None:
+			await author.remove_roles(rol)
 
 async def handleNormal(message,config):
 	if ("joke" in message.content.lower() or "it\'s joke" in message.content.lower()) and message.channel.id!=395743189283241995:
@@ -30,10 +47,22 @@ async def handleNormal(message,config):
 			await message.channel.send( "ily too dad")
 		elif config["dimiId"] != message.author.id:
 			await message.channel.send("Sorry, Dimi is my one true love, but I think you're great!")
-	if message.channel.id==config["eventCh"]:
-		if len(message.attachments)>0 or ".png" in message.content or ".jpg" in message.content or "twitter.com/" in message.content.lower():
-			Role=discord.utils.get(message.guild.roles,name="Ainya's Worshipers")
-			await message.author.add_roles(Role)
+	if message.channel.id==config["eventCh"] and event==1:
+		gRoles=getRoles(message)
+		#if len(message.attachments)>0 or ".png" in message.content or ".jpg" in message.content or "twitter.com/" in message.content.lower():
+		if "!marix" in message.content.lower():
+			girl=message.content.lower().replace("!marix","").strip()
+			if girl.lower()=="aqours" or girl.lower()=="everyone" or girl.lower()=="harem":
+				Role=discord.utils.get(message.guild.roles,name="MariHarem")
+			else:
+				Role=discord.utils.get(message.guild.roles,name="Mari"+girl.title().strip())
+				if Role==None:
+					Role=discord.utils.get(message.guild.roles,name=girl.title().strip()+"Mari")
+			if Role!=None:
+				await removeRoles(gRoles,message.author)
+				await message.author.add_roles(Role)
+	if "goodnight" in message.content.lower() and "maribot" in message.content.lower():
+		await message.channel.send("goodnight {}".format(message.author.mention))
 
 
 async def handleDimi(message,config):

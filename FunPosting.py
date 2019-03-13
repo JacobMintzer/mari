@@ -13,16 +13,37 @@ import sqlite3
 import json
 import pandas as pd
 
+
+global config
+
+
+def isDimi(ctx):
+	global config
+	return ctx.author.id==config["dimiId"]
+
+def botOwner(ctx):
+	global config
+	return ctx.author.id==config["myId"]
+
+def isMod(ctx):
+	global config
+	try:
+		return ctx.author in discord.utils.find(lambda m: m.name=="Pretty Modder Head",ctx.guild.roles).members
+	except:
+		return False
+
 class FunPosting:
 
-	def __init__(self,bot,config):
-		self.config=config
+	def __init__(self,bot):
+		global config
+		config=bot.config
 		self.bot=bot
+		self.config=bot.config
 
 	@commands.command(hidden=True)
 	@commands.check(isMod)
-	async def say(ctx,*,msg):
-		if ctx.author.id==config["dimiId"]:
+	async def say(self,ctx,msg):
+		if ctx.author.id==self.config["dimiId"]:
 			await ctx.send("that, but pretend i said it")
 			return 0
 		content=ctx.message.content.replace("!say ","")
@@ -30,7 +51,7 @@ class FunPosting:
 		await ctx.send(content)
 
 	@commands.command()
-	async def love(ctx,*,msg):
+	async def love(self,ctx,*,msg):
 		MSG=msg.strip().lower()
 		f=open("love.json","r")
 		loveNovel=json.loads(f.read())
@@ -42,7 +63,7 @@ class FunPosting:
 
 	@commands.command()
 	@commands.check(isMod)
-	async def loveadd(ctx,person,content):
+	async def loveadd(self,ctx,person,content):
 		f=open("love.json","r")
 		loveNovel=json.loads(f.read())
 		f.close()
@@ -56,7 +77,7 @@ class FunPosting:
 
 	@commands.command()
 	@commands.check(isMod)
-	async def loveremove(ctx,person):
+	async def loveremove(self,ctx,person):
 		f=open("love.json","r")
 		loveNovel=json.loads(f.read())
 		f.close()
@@ -67,19 +88,25 @@ class FunPosting:
 
 
 	@commands.command()
-	async def smug(ctx):
+	async def smug(self,ctx):
 		await ctx.send("<:mariJoke:395760980577091585>")
 
 	@commands.command(hidden=True)
-	async def ban(ctx,member : discord.User = self.bot.user):
+	async def ban(self,ctx,member : discord.User):
 		global banCoolDown
-		if member.id==config["dimiId"]:
-			await ctx.send("I could never ban Dimi "+config["suteki"])
+		if member.id==self.config["dimiId"]:
+			await ctx.send("I could never ban Dimi "+self.config["suteki"])
 		else:
-			if member.id==config["nyId"]:
+			if member.id==self.config["myId"]:
 				await ctx.send("Sorry dad <:mariCry:397609045403369473>")
 				await ctx.send("{0} is now BANNED".format(member.mention))
 			elif "maribot" in member.name.lower():
 				await ctx.send("{0} is now BANNED".format(ctx.message.author.mention))
 			else:
 				await ctx.send("{0} is now BANNED".format(member.mention))
+
+
+
+
+def setup(bot):
+	bot.add_cog(FunPosting(bot))

@@ -16,11 +16,29 @@ import sqlite3
 import json
 import pandas as pd
 
+global config
+
+data=json.load(open('pastebin.json'))
+api=PasteBinApi(dev_key=data['key'])
+user_key=api.user_key(username=data['username'],password=data['password'])
+
+async def isMod(ctx):
+	if ctx.author in discord.utils.find(lambda m: m.name=="Pretty Modder Head",ctx.guild.roles).members:
+		return True
+	return False
+
+def isDimi(ctx):
+	return ctx.author.id==config["dimiId"]
+
+async def botOwner(ctx):
+	return ctx.author.id==config["myId"]
 
 class Management:
-	def __init__(self,bot,config):
+	def __init__(self,bot):
+		global config
+		config=bot.config
 		self.bot=bot
-		self.config=config
+		self.config=bot.config
 		self.enableFilter=True
 		maricord=self.bot.get_guild(175176337185701888)
 		for channel in maricord.channels:
@@ -30,7 +48,7 @@ class Management:
 
 	@commands.command(hidden=True)
 	@commands.check(isMod)
-	async def exportEmotes(ctx):
+	async def exportEmotes(self,ctx):
 		conn=sqlite3.connect('emotes.db')
 		c=conn.cursor()
 		c.execute("SELECT * FROM emotes ORDER BY number DESC")
@@ -41,53 +59,93 @@ class Management:
 
 	@commands.command(hidden=True)
 	@commands.check(isMod)
-	async def disableSpam(ctx):
+	async def disableSpam(self,ctx):
 		self.enableFilter=False
 
 	@commands.command(hidden=True)
 	@commands.check(isMod)
-	async def enableSpam(ctx):
+	async def enableSpam(self,ctx):
 		self.enableFilter=True
 
-	@commands.command(hidden=True)
-	@commands.check(botOwner)
-	async def restart(ctx):
-		"""I will restart once I'm done with my work"""
-		print ("attempting to restart")
-		self.bot.loop.create_task(reset(ctx))
-
 
 	@commands.command(no_pm=True)
-	async def restartNow(ctx):
+	async def restartNow(self,ctx):
 		"""Restarts Mari, only use this if she isn't working right"""
 		sys.exit(0)
+	@commands.command()
+	async def asar(self,ctx):
+		await ctx.send("commands are !iam and !iamn to add and remove roles respectively. Assignable roles are: pure, squad, ponytail, suwa, he, she, they")
+
+	@commands.command()
+	async def am(self,ctx):
+		await ctx.send("you forgot the i (!iam)")
+
+	@commands.command()
+	async def amn(self,ctx):
+		await ctx.send("you forgot the i (!iamn)")
 
 	@commands.command(no_pm=True)
-	async def iam(ctx,*,role):
-		"""Self assign roles (eg. !iam pure, !iam squad)"""
+	async def iam(self,ctx,*,role):
+		"""Self assign roles (!asar for full list)"""
 		if "pure" in role.lower():
 			Role=discord.utils.get(ctx.message.guild.roles,name="Pure White")
 			await ctx.message.author.add_roles(Role)
 		elif "squad" in role.lower():
 			Role=discord.utils.get(ctx.message.guild.roles,name="Stewshine Squad")
+			await ctx.message.author.add_roles(Role)
+		elif "ponytail" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="Gay for Ponytail Dia")
+			await ctx.message.author.add_roles(Role)
+		elif "she" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="she/her")
+			await ctx.message.author.add_roles(Role)
+		elif "they" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="they/them")
+			await ctx.message.author.add_roles(Role)
+		elif "he" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="he/him")
+			await ctx.message.author.add_roles(Role)
+		elif "suwa"  in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="Blessed by Suwa")
 			await ctx.message.author.add_roles(Role)
 		elif "mod" in role.lower():
 			await ctx.send("<:mariJoke:395760980577091585>")
+		else:
+			return 0
+		await ctx.message.add_reaction(discord.utils.get(ctx.message.guild.emojis, name="mariYay"))
 
 	@commands.command(no_pm=True)
-	async def iamn(ctx,*,role):
-		"""Remove self assign roles (eg. !iamn pure, !iamn squad)"""
+	async def iamn(self,ctx,*,role):
+		"""Remove self assign roles (!asar for full list)"""
 		if "pure" in role.lower():
 			Role=discord.utils.get(ctx.message.guild.roles,name="Pure White")
 			await ctx.message.author.remove_roles(Role)
 		elif "squad" in role.lower():
 			Role=discord.utils.get(ctx.message.guild.roles,name="Stewshine Squad")
 			await ctx.message.author.remove_roles(Role)
+		elif "ponytail" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="Gay for Ponytail Dia")
+			await ctx.message.author.remove_roles(Role)
+		elif "she" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="she/her")
+			await ctx.message.author.remove_roles(Role)
+		elif "they" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="they/them")
+			await ctx.message.author.remove_roles(Role)
+		elif "he" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="he/him")
+			await ctx.message.author.remove_roles(Role)
+		elif "suwa"  in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="Blessed by Suwa")
+			await ctx.message.author.remove_roles(Role)
+		else:
+			return 0
+		await ctx.message.add_reaction(discord.utils.get(ctx.message.guild.emojis, name="mariYay"))
 
 
 	@commands.command(hidden=True)
 	@commands.check(botOwner)
-	async def updateEmojis(ctx):
+	async def updateEmojis(self,ctx):
 		conn=sqlite3.connect('emotes.db')
 		c=conn.cursor()
 		c.execute("DROP TABLE emotes")
@@ -103,18 +161,12 @@ class Management:
 		conn.close()
 
 
-	def get_vc(ctx,channel):
+	def get_vc(self,ctx,channel):
 		for ch in ctx.guild.voice_channels:
 			if ch.id==channel:
 				return ch
 
-	@commands.command(hidden=True)
-	@commands.check(isMod)
-	async def mute(ctx,member : discord.User = self.bot.user, minutes):
-	"""format is !mute @user minutes to mute"""
-		await Mute(ctx.guild.get_member(member.id),ctx.guild,minutes)
-
-	async def Mute(spammer,guild,minutes):
+	async def Mute(self,spammer,guild,minutes):
 		global filingCH
 		global resetSafe
 		resetSafe+=1
@@ -136,3 +188,6 @@ class Management:
 		await spammer.remove_roles(discord.utils.get(guild.roles,name="Muted"))
 		resetSafe-=1
 		await filingCH.send("{0} has been unmuted. They have been given their roles back".format(spammer.name))
+
+def setup(bot):
+	bot.add_cog(Management(bot))

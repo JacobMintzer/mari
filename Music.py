@@ -21,6 +21,7 @@ class Music:
 
 	def __init__(self,bot):
 		self.bot=bot
+		self.config=bot.config
 		self.mode="../Mari/music/"
 		self.artist="none"
 		self.songList=os.listdir(self.mode)
@@ -39,7 +40,7 @@ class Music:
 		self.requests=[]
 
 	@commands.command(hidden=True)
-	async def update(ctx):
+	async def update(self,ctx):
 		"""Sometimes I forget when I learn new songs~"""
 		self.songList=os.listdir(self.mode)
 		self.songList.sort()
@@ -54,7 +55,7 @@ class Music:
 		self.songs[-1]+='```'
 
 
-	async def status(ctx):
+	async def status(self,ctx):
 		data=mutagen.File(self.mode+self.current)
 		title=self.current
 		if "TPE1" in data.keys():
@@ -68,19 +69,24 @@ class Music:
 		await ctx.bot.change_presence(activity=discord.Streaming(name=title+" by "+artist,url="https://www.twitch.tv/anthemOSU"))
 
 
-	async def play(ctx):
+	def get_vc(self,ctx,channel):
+		for ch in ctx.guild.voice_channels:
+			if ch.id==channel:
+				return ch
+
+	async def play(self,ctx):
 		await ctx.bot.wait_until_ready()
 		channel=open("channel.txt","r")
-		ch=get_vc(ctx,int(channel.read().strip()))
+		ch=self.get_vc(ctx,int(channel.read().strip()))
 		#ch=bot.get_channel(int(channel.read().strip()))
 		self.voice = await ch.connect()
-		songs=shuff()
+		songs=self.shuff()
 		if len(self.requests)>0:
 			self.current=self.requests.pop(0)
 		else:
 			self.current=songs.pop(0)
-		player=self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 8"))
-		await status()
+		player=self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 7"))
+		await self.status(ctx)
 		#player.start()
 		while True:
 			if self.message==-1: #stop command
@@ -90,33 +96,33 @@ class Music:
 				self.message=1
 				self.voice.stop()
 				if len(songs)<1:
-					songs=shuff()
+					songs=self.shuff()
 				if len(self.requests)>0:
 					self.current=self.requests.pop(0)
 				else:
 					self.current=songs.pop(0)
 					if ".mp3" not in self.current:
 						self.current=songs.pop(0)
-				await status()
-				self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 8"))
+				await self.status(ctx)
+				self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 7"))
 			elif self.voice.is_playing():
 				#print("is playing")
 				await asyncio.sleep(4)
 			else:
 				if len(songs)<1:
-					songs=shuff()
+					songs=self.shuff()
 				if len(self.requests)>0:
 					self.current=self.requests.pop(0)
 				else:
 					self.current=songs.pop(0)
 					if ".mp3" not in self.current:
 						self.current=songs.pop(0)
-				await status()
-				self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 8"))
+				await self.status(ctx)
+				self.voice.play(discord.FFmpegPCMAudio(self.mode+self.current,options="-q:a 7"))
 
 
 
-	def shuff():
+	def shuff(self):
 		if self.artist=="M":
 			with open ("playlist/muse.txt") as f:
 				songList=f.readlines()
@@ -132,19 +138,19 @@ class Music:
 		return songList
 
 	@commands.command(no_pm=True)
-	async def skip(ctx):
+	async def skip(self,ctx):
 		"""If you want me to play another song"""
 		self.message=5
 
 
 	@commands.command(no_pm=True)
-	async def stop(ctx):
+	async def stop(self,ctx):
 		"""stops music (for now)"""
 		self.message=-1
 		await ctx.bot.change_presence(activity=discord.Game('Type \"!music\" to start music'))
 
 	@commands.command(no_pm=True)
-	async def music(ctx):
+	async def music(self,ctx):
 		"""Let's start the music!"""
 		msg=ctx.message.content.replace("!music ","")
 		if msg.lower()=="muse" or msg.lower()=="u\'s" or "μ" in msg.lower():
@@ -157,11 +163,11 @@ class Music:
 			await ctx.send("never heard of them")
 		if self.message!=2:
 			self.message=1
-			bot.loop.create_task(play(ctx))
+			self.bot.loop.create_task(self.play(ctx))
 
 
 	@commands.command()
-	async def playing(ctx):
+	async def playing(self,ctx):
 		"""I tell you the song I am singing"""
 		data=mutagen.File(self.mode+self.current)
 		title="\n[Title]: "
@@ -194,7 +200,7 @@ class Music:
 
 
 	@commands.command()
-	async def queue(ctx):
+	async def queue(self,ctx):
 		"""see what SHINY songs Mari has in store for you"""
 		requestList="```"
 		if len(self.requests)==0:
@@ -207,7 +213,7 @@ class Music:
 		await ctx.send(requestList)
 
 	@commands.command(no_pm=True,pass_context=True)
-	async def request(ctx,*,msg):
+	async def request(self,ctx,*,msg):
 		"""Request Mari-San to play a song! If you only know some of the name that's fine, Mari-Nee-san will help"""
 		potential=[]
 		#bot.send_typing(ctx.message.channel)
@@ -215,13 +221,13 @@ class Music:
 			#ctx.send('adding every love live song ever')
 			await ctx.message.add_reaction(discord.utils.get(ctx.message.guild.emojis, name="mariYay"))
 			#await ctx.message.add_reaction(discord.utils.get(ctx.message.guild.emojis, name="mariSuperSmug"))
-			for song in songList:
+			for song in self.songList:
 				if fuzz.ratio('Garasu no Hanazono'.lower()+'.mp3',song.lower())>95:
 					self.requests.append(song)
 					return 0
 		elif "lesbian" in msg.lower():
 			await ctx.message.add_reaction(discord.utils.get(ctx.message.guild.emojis, name="mariYay"))
-			for song in songList:
+			for song in self.songList:
 				if fuzz.ratio('Zurui yo Magnetic today.mp3'.lower(),song.lower())>95:
 					self.requests.append(song)
 					return 0
@@ -237,7 +243,7 @@ class Music:
 			else:
 				await ctx.send("my thighs are only for dimi")
 		else:
-			for song in songList:
+			for song in self.songList:
 				if fuzz.ratio(msg.lower()+'.mp3',song.lower())>95:
 					self.requests.append(song)
 					#yield from bot.say("added")
@@ -261,9 +267,10 @@ class Music:
 				await ctx.send(response)
 
 	@commands.command(pass_context=True)
-	async def list(ctx):
+	async def list(self,ctx):
 		"""I can message you all the songs I know!"""
 		for songName in songs:
 			await ctx.message.author.send(songName)
-def setup (bot):
+
+def setup(bot):
 	bot.add_cog(Music(bot))

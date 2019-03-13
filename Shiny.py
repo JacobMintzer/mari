@@ -19,16 +19,16 @@ import Music
 import MessageHandler
 import Management
 import Events
-import Funposting
+import FunPosting
 
 
 config=json.load(open('config.json'))
 
+cogList=['Music','Management','Events','FunPosting']
 bot = commands.Bot(command_prefix=commands.when_mentioned_or('!', 'hey nep ', 'Hey nep ', 'Hey maribot ','hey maribot ', 'Hey Maribot '), descripton='Shiny School Idol Bot!!')
-bot.add_cog(Music(bot))
-bot.add_cog(Management(bot,config))
-bot.add_cog(FunPosting(bot,config))
-bot.add_cog(Events(bot,config))
+
+
+bot.config=config
 songList=os.listdir("../Mari/music/")
 songList.sort()
 if not discord.opus.is_loaded():
@@ -67,8 +67,10 @@ async def isMod(ctx):
 @bot.event
 async def on_ready():
 	print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
-	await bot.change_presence(activity=discord.Game('Type \"!help\"'))
+	await bot.change_presence(activity=discord.Game('Maplestory 2'))
 	bot.loop.create_task(noSpam())
+	for cog in cogList:
+		bot.load_extension(cog)
 
 async def noSpam():
 	global G_orig,G_repeat,G_max,G_time,antiSpamCount,antiSpam,disable
@@ -104,10 +106,13 @@ async def on_message(message):
 	elif message.channel.id!=410486994699812864:
 		antiSpam[message.author.id]=[message.content]
 		antiSpamCount[message.author.id]=1
-	if antiSpamCount[message.author.id]>G_max and enable:
-		management=bot.get_cog("management")
-		await management.Mute(message.author,message.guild,-1)
-		return (1)
+	try:
+		if antiSpamCount[message.author.id]>G_max and enable:
+			management=bot.get_cog("management")
+			await management.Mute(message.author,message.guild,-1)
+			return (1)
+	except Exception as e:
+		print (e)
 	if "<:" in message.content and message.author.bot is not True:
 		await process(message)
 	if message.channel.id==395743189283241995:
@@ -153,7 +158,7 @@ async def on_guild_emojis_update(guild,before,after):
 async def on_reaction_add(reaction, user):
 	if "Shiny" in reaction.message.guild.name:
 		#print("reaction added")
-		global emoteList
+		emoteList=bot.get_guild(175176337185701888).emojis
 		try:
 			if reaction.emoji in emoteList:
 				#print (str(type(reaction.emoji)))
@@ -172,6 +177,14 @@ async def on_reaction_add(reaction, user):
 		except Exception as e:
 			print("error on checking reaction "+str(e))
 
+
+@bot.command(hidden=True)
+@commands.check(isMod)
+async def mute(ctx,member : discord.User = bot.user, minutes=-1):
+	"""format is !mute @user minutes to mute"""
+	await bot.get_cog("Management").Mute(ctx.guild.get_member(member.id),ctx.guild,minutes)
+
+
 @bot.event
 async def on_member_join(member):
 	if "Shiny" in member.guild.name:
@@ -184,6 +197,13 @@ async def on_member_join(member):
 		welcomeMessage=welcome.read().format(member.mention,discord.utils.get(member.guild.emojis, name="itsjoke"),welcomech.mention)
 		bot.loop.create_task(delayMessage(defch,welcomeMessage))
 
+
+@bot.command(hidden=True)
+@commands.check(botOwner)
+async def restart(ctx):
+	"""I will restart once I'm done with my work"""
+	print ("attempting to restart")
+	self.bot.loop.create_task(reset(ctx))
 
 async def delayMessage(defch,welcomeMessage):
 	global resetSafe
@@ -222,7 +242,7 @@ async def reset(ctx):
 					await ctx.message.channel.send("Mari will be right back")
 					await ctx.message.guild.get_member(config["myId"]).send("resetting")
 				except:
-					print("")
+					""
 				sys.exit()
 			else:
 				await asyncio.sleep(20)
