@@ -25,7 +25,7 @@ import FunPosting
 config=json.load(open('config.json'))
 
 cogList=['Music','Management','Events','FunPosting']
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('!', 'hey nep ', 'Hey nep ', 'Hey maribot ','hey maribot ', 'Hey Maribot '), descripton='Shiny School Idol Bot!!')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('!', 'hey nep, ', 'Hey nep, ', 'Hey maribot, ','hey maribot, ', 'Hey Maribot, '), descripton='Shiny School Idol Bot!!')
 
 
 bot.config=config
@@ -67,7 +67,7 @@ async def isMod(ctx):
 @bot.event
 async def on_ready():
 	print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
-	await bot.change_presence(activity=discord.Game('Maplestory 2'))
+	await bot.change_presence(activity=discord.Game('With KananBot'))
 	bot.loop.create_task(noSpam())
 	for cog in cogList:
 		bot.load_extension(cog)
