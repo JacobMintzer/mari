@@ -269,7 +269,7 @@ class Music:
 	@commands.command(pass_context=True)
 	async def list(self,ctx):
 		"""I can message you all the songs I know!"""
-		for songName in songs:
+		for songName in self.songs:
 			await ctx.message.author.send(songName)
 
 def setup(bot):
