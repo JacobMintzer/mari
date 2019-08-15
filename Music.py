@@ -66,7 +66,7 @@ class Music:
 			artist=str(data["TXXX:artist_jp"])
 		else:
 			artist="artist unknown, pm junior mints to add one"
-		await ctx.bot.change_presence(activity=discord.Streaming(name=title+" by "+artist,url="https://www.twitch.tv/anthemOSU"))
+		await ctx.bot.change_presence(activity=discord.Streaming(name=title+" by "+artist,url="https://www.twitch.tv/anthem96"))
 
 
 	def get_vc(self,ctx,channel):
@@ -214,7 +214,7 @@ class Music:
 
 	@commands.command(no_pm=True,pass_context=True)
 	async def request(self,ctx,*,msg):
-		"""Request Mari-San to play a song! If you only know some of the name that's fine, Mari-Nee-san will help"""
+		"""Request Mari to play a song! If you only know some of the name that's fine, Mari nee-san will help"""
 		potential=[]
 		#bot.send_typing(ctx.message.channel)
 		if msg.lower()=="gay":
