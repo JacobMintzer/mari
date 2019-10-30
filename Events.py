@@ -15,7 +15,7 @@ import pandas as pd
 
 
 
-class Events(discord.Client):
+class Events(commands.Cog):
 	def __init__(self,bot):
 		#self.config=config
 		self.bot=bot

@@ -17,7 +17,7 @@ import json
 import pandas as pd
 
 
-class Music:
+class Music(commands.Cog):
 
 	def __init__(self,bot):
 		self.bot=bot

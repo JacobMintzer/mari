@@ -15,7 +15,7 @@ import pandas as pd
 girls=["You","Kanan","Riko","Chika","Dia","Ruby","Hanamaru","Yoshiko","Harem"]
 
 
-event=1
+event=0
 
 def getRoles(message):
 	gRoles=[]
@@ -32,6 +32,9 @@ async def removeRoles(gRoles,author):
 			await author.remove_roles(rol)
 
 async def handleNormal(message,config):
+	if (("PREGARIO" in message.content or "PREGIGI" in message.content) and (message.channel.name != "kimoi-memes")):
+		await message.delete()
+		await message.channel.send("#kimoi-memes")
 	if ("joke" in message.content.lower() or "it\'s joke" in message.content.lower()) and message.channel.id!=395743189283241995:
 		await message.add_reaction(discord.utils.get(message.guild.emojis, name="mariJoke"))
 	if "thanks maribot" in message.content.lower():

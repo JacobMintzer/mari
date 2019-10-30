@@ -33,7 +33,7 @@ def isDimi(ctx):
 async def botOwner(ctx):
 	return ctx.author.id==config["myId"]
 
-class Management:
+class Management(commands.Cog):
 	def __init__(self,bot):
 		global config
 		config=bot.config
@@ -107,6 +107,9 @@ class Management:
 			await ctx.message.author.add_roles(Role)
 		elif "suwa"  in role.lower():
 			Role=discord.utils.get(ctx.message.guild.roles,name="Blessed by Suwa")
+			await ctx.message.author.add_roles(Role)
+		elif "anyc" in role.lower():
+			Role=discord.utils.get(ctx.message.guild.roles,name="ANYC Meetup")
 			await ctx.message.author.add_roles(Role)
 		elif "mod" in role.lower():
 			await ctx.send("<:mariJoke:395760980577091585>")
