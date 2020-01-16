@@ -41,7 +41,8 @@ if not discord.opus.is_loaded():
 global G_orig,G_repeat,G_max,G_time
 G_orig=1
 G_repeat=2
-G_max=5
+G_mentions=1
+G_max=6
 G_time=10
 songs=['```']
 global antiSpam,antiSpamCount,enable
@@ -100,6 +101,9 @@ async def on_message(message):
 			antiSpamCount[message.author.id]+=0
 		if message.content in antiSpam[message.author.id]:
 			antiSpamCount[message.author.id]+=G_repeat
+		if len(message.mentions)>0:
+			print(len(message.mentions))
+			antiSpamCount[message.author.id]+=int(((len(message.mentions)+1)/2)*G_mentions)
 		else:
 			antiSpamCount[message.author.id]+=G_orig
 		antiSpam[message.author.id].append(message.content)
@@ -108,7 +112,7 @@ async def on_message(message):
 		antiSpamCount[message.author.id]=1
 	try:
 		if antiSpamCount[message.author.id]>G_max and enable:
-			management=bot.get_cog("management")
+			management=bot.get_cog("Management")
 			await management.Mute(message.author,message.guild,-1)
 			return (1)
 	except Exception as e:
@@ -123,7 +127,7 @@ async def on_message(message):
 	#if message.channel.id==439643359745671180:
 		#if len(message.attachments)>0 or ".png" in message.content or ".jpg" in message.content or "twitter.com/" in message.content.lower():
 		#gRole=discord.utils.get(message.guild.roles,name="Giveaway")
-		#await message.author.add_roles(gRole)	
+		#await message.author.add_roles(gRole)
 	await bot.process_commands(message)
 
 

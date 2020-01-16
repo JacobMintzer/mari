@@ -170,10 +170,9 @@ class Management(commands.Cog):
 				return ch
 
 	async def Mute(self,spammer,guild,minutes):
-		global filingCH
-		global resetSafe
-		resetSafe+=1
-		if discord.utils.get(guild.roles,name="Muted") in spammer.roles:
+		filingCH=discord.utils.get(guild.text_channels,id=config["filingCH"])
+		MutedRole=discord.utils.find(lambda x: x.name=="Muted",guild.roles)
+		if MutedRole in spammer.roles:
 			return (1)
 		if minutes==-1:
 			await spammer.send("looks like you are not being SHINY right now, you have been temporarily muted, and the mods have been notified. You will automatically be unmuted Please do not ask to be unmuted, and avoid spamming in the future")
@@ -184,12 +183,11 @@ class Management(commands.Cog):
 		roleList=""
 		for role in Roles:
 			roleList=roleList+role.name+", "
-		await filingCH.send("{0} has been muted for {2} minutes, and will automatically be unmuted in 10 minutes. They had the following roles{1}".format(spammer.name,roleList,minutes))
-		await spammer.add_roles(discord.utils.get(guild.roles,name="Muted"))
+		await filingCH.send("{0} has been muted for {2} minutes, and will automatically be unmuted in 10 minutes. They had the following roles: \n{1}".format(spammer.name,roleList,minutes))
+		await spammer.add_roles(MutedRole) #discord.utils.get(guild.roles,name=="Muted"))
 		await asyncio.sleep(minutes*60)
 		await spammer.edit(roles=Roles)
-		await spammer.remove_roles(discord.utils.get(guild.roles,name="Muted"))
-		resetSafe-=1
+		await spammer.remove_roles(discord.utils.get(guild.roles,name=="Muted"))
 		await filingCH.send("{0} has been unmuted. They have been given their roles back".format(spammer.name))
 
 def setup(bot):

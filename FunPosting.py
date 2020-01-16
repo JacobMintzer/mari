@@ -34,7 +34,7 @@ def isMod(ctx):
 	except:
 		return False
 
-async def genLog(member, what):
+def genLog(member, what):
 	embd=discord.Embed()
 	embd.title=member.display_name
 	embd.description=what
@@ -46,7 +46,7 @@ async def genLog(member, what):
 	embd=embd.add_field(name = 'Joined', value = member.joined_at)
 	embd=embd.add_field(name = 'Roles', value = ', '.join(map(lambda x: x.name, member.roles)))
 	embd=embd.add_field(name = 'AccountCreated', value = member.created_at)
-	return mbd
+	return embd
 
 class FunPosting(commands.Cog):
 
@@ -155,9 +155,9 @@ class FunPosting(commands.Cog):
 	async def info(self, ctx, member: discord.Member=None):
 		"""!info for information on yourself, or !info name for info on another person"""
 		if member == None:
-			await ctx.send(embed=self.genLog(ctx.message.author, "Info on {0}".format(ctx.message.author.display_name)))
+			await ctx.send(embed=genLog(ctx.message.author, "Info on {0}".format(ctx.message.author.display_name)))
 		else:
-			await ctx.send(embed=self.genLog(member, "info on {0}".format(member.display_name)))
+			await ctx.send(embed=genLog(member, "info on {0}".format(member.display_name)))
 
 	@commands.command()
 	async def sinfo(self, ctx):
